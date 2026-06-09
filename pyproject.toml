@@ -8,6 +8,9 @@ version = "0.1.0"
 description = "See what Claude Code is doing when your orchestrator delegates to it"
 readme = "README.md"
 license = {text = "MIT"}
+authors = [
+    { name = "Ethan Yeang" },
+]
 requires-python = ">=3.10"
 dependencies = [
     "rich>=13.0.0",
@@ -29,10 +32,6 @@ synapse-wrap = "synapse.wrap:main"
 [project.urls]
 Homepage = "https://github.com/metahubaifeel/synapse"
 Repository = "https://github.com/metahubaifeel/synapse"
-
-authors = [
-    { name = "Ethan Yeang" },
-]
 
 [tool.hatch.build.targets.wheel]
 packages = ["synapse"]
