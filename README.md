@@ -17,6 +17,23 @@ Synapse fixes that. Drop-in wrapper. Real-time tool calls in Discord or a termin
 ✅ DONE
 ```
 
+### Hermes chat (recommended)
+
+Set `SYNAPSE_AUTO_WATCH=0` so tool calls stream into the orchestrator — no extra terminal window:
+
+```
+[synapse] task_id=4c14525e
+[Claude Code] Claude Code v2.1.168 model=deepseek-v4-pro tools=26
+🔧 Read /home/amd/下载/dev/agent-os/launch.sh
+🔧 Write /tmp/synapse-demo.md
+🔧 Bash ls -la /tmp/synapse-demo.md
+✅ DONE $0.1416 | 4 turns | 17993ms
+```
+
+### Desktop watch (optional)
+
+Run `synapse watch` manually, or leave `SYNAPSE_AUTO_WATCH=1` to auto-open a Rich dashboard:
+
 ![Synapse watch — live Claude Code tool calls](assets/synapse-watch-demo.png)
 
 *Real `synapse watch` session: Read, Edit, Bash, and task progress while Hermes delegates via `claude-ds`.*
@@ -43,7 +60,8 @@ Not another multi-agent framework. Not another memory layer. A **visibility laye
 |---------|-------------|
 | **Drop-in wrapper** | Replace `claude-ds` with `synapse-wrap` — same CLI, adds visibility |
 | **Discord live feed** | Each `🔧 Read` / `🔧 Write` / `🔧 Bash` posts to your active thread |
-| **Desktop watch** | Optional `synapse watch` Rich dashboard (auto-opens on delegate) |
+| **Hermes inline** | `🔧` lines on stdout — orchestrator chat shows every tool call |
+| **Desktop watch** | Optional `synapse watch` Rich dashboard (`SYNAPSE_AUTO_WATCH=1`) |
 | **Event log** | SQLite at `~/.synapse/synapse.db` — cross-process, survives restarts |
 
 ## Quick start
@@ -62,12 +80,14 @@ synapse watch
 
 1. Point `~/.local/bin/claude-ds` at `synapse-wrap`
 2. Hermes skill already says: non-trivial tasks → `terminal("claude-ds '...'")`
-3. On Discord, tool calls appear in the thread automatically
+3. Tool calls appear **in the Hermes conversation** (stdout) and on Discord (optional)
 4. No manual setup per task
 
 ```bash
 # ~/.local/bin/claude-ds
+#!/bin/bash
 export SYNAPSE_BIN="/path/to/synapse/.venv/bin/synapse"
+export SYNAPSE_AUTO_WATCH=0   # Hermes users: see output in chat, not a popup
 exec /path/to/synapse/.venv/bin/synapse-wrap "$@"
 ```
 
@@ -75,7 +95,7 @@ exec /path/to/synapse/.venv/bin/synapse-wrap "$@"
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `SYNAPSE_AUTO_WATCH` | `1` | Auto-open desktop watch terminal |
+| `SYNAPSE_AUTO_WATCH` | `1` | `0` = stdout only (Hermes). `1` = also auto-open `synapse watch` |
 | `SYNAPSE_DISCORD_NOTIFY` | `1` | Push tool calls to Discord (needs Hermes session env) |
 | `SYNAPSE_ENV_FILE` | `~/.hermes/.env` | Env file for Claude Code + Discord bot token |
 | `SYNAPSE_BIN` | auto | Path to `synapse` CLI for auto-watch |
@@ -138,8 +158,17 @@ MIT
 
 问题是委派出去就看不见了——Discord 只显示 `💻 terminal: ...`，不知道是在读文件、写代码还是卡死了。
 
-Synapse 做一件事：每次 `claude-ds` 跑的时候，**实时把每一步 tool call 推到 Discord**（或桌面 `synapse watch`）。
+Synapse 做一件事：每次 `claude-ds` 跑的时候，**实时把每一步 tool call 显示在 Hermes 对话里**（也可推 Discord / 开 `synapse watch`）。
 
-![synapse watch 实时面板](assets/synapse-watch-demo.png)
+Hermes 推荐配置：`export SYNAPSE_AUTO_WATCH=0`（不弹窗，输出直接在聊天里）。
+
+```
+🔧 Read launch.sh
+🔧 Write /tmp/synapse-demo.md
+🔧 Bash ls -la /tmp/synapse-demo.md
+✅ DONE $0.1416 | 4 turns | 17993ms
+```
+
+可选桌面面板：`synapse watch`（见 `assets/synapse-watch-demo.png`）。
 
 安装：`pip install synapse`，把 `claude-ds` 指到 `synapse-wrap`，完事。
