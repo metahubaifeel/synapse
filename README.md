@@ -17,6 +17,10 @@ Synapse fixes that. Drop-in wrapper. Real-time tool calls in Discord or a termin
 ✅ DONE
 ```
 
+![Synapse watch — live Claude Code tool calls](assets/synapse-watch-demo.png)
+
+*Real `synapse watch` session: Read, Edit, Bash, and task progress while Hermes delegates via `claude-ds`.*
+
 ## The story
 
 I run multiple AI agents. Hermes handles chat, memory, Discord, scheduling — it's great at *orchestrating*.
@@ -135,5 +139,7 @@ MIT
 问题是委派出去就看不见了——Discord 只显示 `💻 terminal: ...`，不知道是在读文件、写代码还是卡死了。
 
 Synapse 做一件事：每次 `claude-ds` 跑的时候，**实时把每一步 tool call 推到 Discord**（或桌面 `synapse watch`）。
+
+![synapse watch 实时面板](assets/synapse-watch-demo.png)
 
 安装：`pip install synapse`，把 `claude-ds` 指到 `synapse-wrap`，完事。
